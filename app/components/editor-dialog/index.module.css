@@ -1,0 +1,14 @@
+.dialog {
+  margin-top: 50px;
+
+  .container {
+    width: 100%;
+    height: 100%;
+
+    .bottomButtons {
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+    }
+  }
+}

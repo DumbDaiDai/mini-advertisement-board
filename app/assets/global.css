@@ -1,0 +1,13 @@
+* {
+  box-sizing: border-box;
+}
+
+html, body, body>#__nuxt {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+}

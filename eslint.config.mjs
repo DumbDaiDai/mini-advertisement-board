@@ -1,6 +1,5 @@
-// @ts-check
-import withNuxt from './.nuxt/eslint.config.mjs'
+import zjutjh from "@zjutjh/eslint-config";
 
-export default withNuxt(
-  // Your custom configs here
-)
+export default zjutjh({
+  ignores: ["**/.output", "**/.nuxt", "**/dist"]
+});
