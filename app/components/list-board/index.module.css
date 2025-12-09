@@ -20,6 +20,7 @@
 
     .scroll {
       flex-grow: 1;
+      overflow-x: hidden;
       overflow-y: auto;
       scrollbar-width: thin;
 
@@ -27,6 +28,18 @@
         gap: 10px;
         display: grid;
         grid-template-columns: 1fr 1fr 1fr 1fr;
+
+        @media screen and (max-width: 1000px) {
+          & {
+            grid-template-columns: 1fr 1fr;
+          }
+        }
+
+        @media screen and (max-width: 500px) {
+          & {
+            grid-template-columns: 1fr;
+          }
+        }
 
         .card {
           height: 200px;

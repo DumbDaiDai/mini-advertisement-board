@@ -1,3 +1,7 @@
+export interface ListBoardUrlQuery {
+  page: number;
+  [key: string]: unknown;
+}
 export interface PostLoginRequest {
   username: string;
   password: string;
@@ -13,30 +17,34 @@ export interface Advertisement {
   url: string;
 }
 
-export type AdvertisementOverview = Pick<Advertisement, "id" | "title" | "content" | "hot" | "price" | "url">;
-
-export type AdvertisementSetting = Pick<Advertisement, "id" | "title" | "content" | "price" | "publisher" | "url">;
-
 export interface GetAdvertisementListRequest {
   pageIndex: number;
   capacity: number;
 }
 
 export interface GetAdvertisementListResponse {
-  list: AdvertisementOverview[],
+  list: Advertisement[],
   total: number
 }
 
-export interface GetDetailRequest {
+export interface GetAdvertisementDetailRequest {
   id: number;
 }
 
-export type GetDetailResponse = AdvertisementSetting;
+export type GetAdvertisementDetailResponse = Omit<Advertisement, "hot">;
 
-export interface DeleteRequest {
+export interface DeleteAdvertisementRequest {
   id: number;
 }
 
-export type PutEditRequest = AdvertisementSetting;
+export type PutEditAdvertisementRequest = Omit<Advertisement, "hot">;
 
-export type PostCreateRequest = Pick<AdvertisementSetting, "title" | "content" | "price" | "publisher" | "url">;
+export type PostCreateAdvertisementRequest = Omit<Advertisement, "id" | "hot">;
+
+export interface PostCopyAdvertisementRequest {
+  id: number;
+}
+
+export interface PutViewAdvertisementRequest {
+  id: number;
+}

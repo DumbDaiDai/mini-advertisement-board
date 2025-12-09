@@ -15,6 +15,7 @@
               :hot="item.hot"
               :price="item.price"
               :url="item.url"
+              :publisher="item.publisher"
             />
           </div>
         </div>
@@ -44,8 +45,8 @@ import { ElEmpty, ElPagination } from "element-plus";
 import AdvertiseCard from "~/components/advertisement-card/index.vue";
 import { getAdvertisementList } from "~/service/api";
 
+import type { ListBoardUrlQuery } from "../../service/types";
 import { default as styles } from "./index.module.css";
-import type { ListBoardUrlQuery } from "./types";
 
 const { urlQuery, initializeUrlQuery } = usePersistUrlQuery<ListBoardUrlQuery>();
 
@@ -63,14 +64,28 @@ initializeUrlQuery({
 
 const {
   data: listData,
-  fetchStatus
+  fetchStatus,
+  dataUpdatedAt
 } = useQuery({
-  queryKey: ["list", urlQuery.value.page, CAPACITY] as const,
+  queryKey: ["list", toRef(() => urlQuery.value.page), CAPACITY] as const,
   queryFn: ({ queryKey }) =>
     getAdvertisementList({
       pageIndex: queryKey[1],
       capacity: queryKey[2]
     }),
   placeholderData: keepPreviousData
+});
+
+watch(dataUpdatedAt, () => {
+  if (!listData.value) {
+    return;
+  }
+  const maxPage = Math.ceil(listData.value.total / CAPACITY);
+  if (urlQuery.value.page > maxPage) {
+    urlQuery.value.page = maxPage;
+  }
+  if (urlQuery.value.page < 1) {
+    urlQuery.value.page = 1;
+  }
 });
 </script>

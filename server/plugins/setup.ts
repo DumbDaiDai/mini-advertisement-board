@@ -21,7 +21,7 @@ export default defineNitroPlugin((app) => {
   const saveData = async () => {
     try {
       await fs.promises.writeFile(filePath, JSON.stringify(serverData), "utf8");
-      console.warn(serverData);
+      // console.warn(serverData);
     } catch (err) {
       console.error(err);
     }

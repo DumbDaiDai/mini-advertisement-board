@@ -9,7 +9,7 @@ export default defineEventHandler((event) => {
   ];
 
   const loggedInAt = get(serverData, "loggedInAt");
-  if (AUTH_API.includes(event.path.slice(5)) && (!loggedInAt || new Date().getTime() - loggedInAt > 120000)) {
+  if (AUTH_API.includes(event.path.slice(5)) && (!loggedInAt || Date.now() - loggedInAt > 120000)) {
     return response(200401, "登录过期", {});
   }
 });

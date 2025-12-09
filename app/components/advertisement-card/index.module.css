@@ -1,6 +1,12 @@
 .card {
   width: 100%;
   height: 100%;
+  transition: transform 500ms;
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.02);
+  }
 
   .container {
     display: flex;

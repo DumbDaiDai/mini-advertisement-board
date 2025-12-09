@@ -10,6 +10,7 @@
       :key="route.path"
       :class="styles.logoutButton"
       type="info"
+      text
       @click="handleLogoutClick()"
     >
       登出

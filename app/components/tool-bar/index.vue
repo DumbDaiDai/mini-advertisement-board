@@ -1,6 +1,6 @@
 <template>
   <div :class="styles.container">
-    <el-button type="primary" @click="dialogStore.visible = true">
+    <el-button type="primary" @click="handleCreateClick()">
       新增广告
     </el-button>
     <el-button type="primary" @click="handleRefetchClick()">
@@ -13,12 +13,18 @@
 import { useQueryClient } from "@tanstack/vue-query";
 import { ElButton } from "element-plus";
 
-import type { ListBoardUrlQuery } from "../list-board/types";
+import type { ListBoardUrlQuery } from "~/service/types";
+
 import { default as styles } from "./index.module.css";
 
 const { urlQuery } = usePersistUrlQuery<ListBoardUrlQuery>();
 const queryClient = useQueryClient();
 const dialogStore = useDialogStore();
+
+const handleCreateClick = () => {
+  dialogStore.id = undefined;
+  dialogStore.visible = true;
+};
 
 const handleRefetchClick = () => {
   queryClient.refetchQueries({ queryKey: ["list", urlQuery.value.page] });

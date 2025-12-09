@@ -1,20 +1,25 @@
-import { PostCreateRequest } from "~/service/types";
+import { set } from "lodash-es";
+
+import type { PostCreateAdvertisementRequest } from "~/service/types";
 
 import { serverData } from "../data";
 import { response } from "../utils/response";
 
 export default defineEventHandler(async (event) => {
-  const body: PostCreateRequest = await readBody(event);
+  const body: PostCreateAdvertisementRequest = await readBody(event);
 
+  if (!serverData.nextId) {
+    serverData.nextId = 0;
+  }
   if (!serverData.list) {
-    serverData.list = [];
+    serverData.list = {};
   }
 
-  serverData.list.push({
-    id: serverData.list.length,
+  set(serverData.list, serverData.nextId, {
     hot: 0,
     ...body
   });
+  ++serverData.nextId;
 
   return response(200, "", {});
 });

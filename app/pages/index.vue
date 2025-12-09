@@ -6,7 +6,7 @@
     <div :class="styles.main">
       <list-board />
     </div>
-    <editor-dialog :key="`${dialogStore.visible}`" />
+    <editor-dialog :key="dialogKey" />
   </div>
 </template>
 
@@ -16,8 +16,15 @@ import ListBoard from "~/components/list-board/index.vue";
 import ToolBar from "~/components/tool-bar/index.vue";
 
 import { default as styles } from "./index.module.css";
-
 const dialogStore = useDialogStore();
+
+let dialogUpdatedAt = 0;
+const dialogKey = computed(() => {
+  if (dialogStore.visible) {
+    dialogUpdatedAt = Date.now();
+  }
+  return dialogUpdatedAt;
+});
 
 useSeoMeta({ title: "广告墙" });
 </script>

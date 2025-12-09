@@ -7,7 +7,8 @@ export default defineNuxtConfig({
     "@nuxt/icon",
     "@nuxt/image",
     "@pinia/nuxt",
-    "@pinia-plugin-persistedstate/nuxt"
+    "@pinia-plugin-persistedstate/nuxt",
+    "@element-plus/nuxt"
   ],
   css: [
     "@/assets/global.css",

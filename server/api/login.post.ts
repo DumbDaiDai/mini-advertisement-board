@@ -1,6 +1,6 @@
 import { set } from "lodash-es";
 
-import { PostLoginRequest } from "~/service/types";
+import type { PostLoginRequest } from "~/service/types";
 
 import { serverData } from "../data";
 import { response } from "../utils/response";
@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
     return response(200402, "账号或密码错误", {});
   }
 
-  set(serverData, "loggedInAt", new Date().getTime());
+  set(serverData, "loggedInAt", Date.now());
 
   return response(200, "", {});
 });

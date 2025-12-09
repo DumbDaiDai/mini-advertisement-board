@@ -40,7 +40,7 @@ export const useLRURecord = <T extends Record<string, unknown>>(
   /** 该store下指定key对应的localStorage键名 */
   const localStorageKey = (recordKey: string | number) => `${storeName}${recordKey}`;
   /** 设置localStorage中该store下指定key对应的Record */
-  const storeRecord = (keyToSet: string | number, value: Record<string, any>) => {
+  const storeRecord = (keyToSet: string | number, value: Record<string, unknown>) => {
     localStorage.setItem(localStorageKey(keyToSet), JSON.stringify(value));
   };
   /** 从localStorage获取该store下指定key对应的Record */

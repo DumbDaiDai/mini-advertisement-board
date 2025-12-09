@@ -5,8 +5,8 @@
     :body-class="styles.container"
     :close-on-click-modal="false"
     :show-close="false"
+    :z-index="1900"
     append-to-body
-    @close="handleCloseDialog()"
   >
     <el-form
       ref="AdFormRef"
@@ -82,7 +82,7 @@
           @input="handleAdEdited()"
         />
       </el-form-item>
-      <el-form-item prop="url">
+      <el-form-item prop="price">
         <template #label>
           <el-text tag="b" size="large">
             出价
@@ -122,10 +122,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import { ElButton, ElDialog, ElForm, ElFormItem, ElInput, ElInputNumber, ElMessage, ElMessageBox, type FormRules } from "element-plus";
 import { toRef, useTemplateRef, watch } from "vue";
 
-import { getDetail, postCreateAd, putEditAd } from "~/service/api";
-import type { AdvertisementSetting } from "~/service/types";
+import { getAdvertisementDetail, postCreateAdvertisement, putEditAdvertisement } from "~/service/api";
 
-import type { ListBoardUrlQuery } from "../list-board/types";
+import type { Advertisement, ListBoardUrlQuery } from "../../service/types";
 import styles from "./index.module.css";
 
 const dialogStore = useDialogStore();
@@ -146,7 +145,7 @@ const {
     content: "",
     url: "",
     price: 0
-  } as AdvertisementSetting
+  } as Omit<Advertisement, "hot">
 );
 
 const isNewAd = (dialogStore.id as string | undefined) === undefined;
@@ -191,6 +190,7 @@ const formRules: FormRules = {
   price: [
     {
       message: "请输入出价",
+      type: "number",
       trigger: "blur",
       required: true,
       min: 0
@@ -198,23 +198,25 @@ const formRules: FormRules = {
   ]
 };
 
-if (!isNewAd && !isAdFormDataEmpty()) {
-  ElMessageBox({
-    title: "未保存的内容",
-    message: "上次编辑的内容未保存。要恢复吗？",
-    confirmButtonText: "恢复",
-    cancelButtonText: "放弃",
-    cancelButtonClass: "el-button--danger",
-    showCancelButton: true,
-    showClose: false,
-    closeOnClickModal: false,
-    draggable: true
-  })
-    .catch(() => {
-      deleteAdFormData();
-      refetch();
-    });
-}
+onMounted(() => {
+  if (dialogStore.visible && !isNewAd && !isAdFormDataEmpty()) {
+    ElMessageBox({
+      title: "未保存的内容",
+      message: "上次编辑的内容未保存。要恢复吗？",
+      confirmButtonText: "恢复",
+      cancelButtonText: "放弃",
+      cancelButtonClass: "el-button--danger",
+      showCancelButton: true,
+      showClose: false,
+      closeOnClickModal: false,
+      draggable: true
+    })
+      .catch(() => {
+        deleteAdFormData();
+        refetch();
+      });
+  }
+});
 
 const {
   data: AdRemoteData,
@@ -224,12 +226,12 @@ const {
 } = useQuery({
   queryKey: ["detail", toRef(() => dialogStore.id)] as const,
   queryFn: ({ queryKey }) =>
-    getDetail({
+    getAdvertisementDetail({
       id: queryKey[1] ?? 0
     }),
   refetchOnReconnect: false,
   refetchOnWindowFocus: false,
-  enabled: !isNewAd && isAdFormDataEmpty()
+  enabled: dialogStore.visible && !isNewAd && isAdFormDataEmpty()
 });
 
 const handleAdEdited = () => {
@@ -242,7 +244,7 @@ const handleAdEdited = () => {
 
 const handleCloseDialog = () => {
   dialogStore.visible = false;
-  queryClient.refetchQueries({ queryKey: ["list", urlQuery.value.page] });
+  queryClient.refetchQueries({ queryKey: ["list", toRef(() => urlQuery.value.page)] });
 };
 
 const IsValidatingFailed = async (): Promise<boolean> => {
@@ -260,7 +262,10 @@ const IsValidatingFailed = async (): Promise<boolean> => {
   return res;
 };
 
-const handleConfirmClick = () => {
+const handleConfirmClick = async () => {
+  if (await IsValidatingFailed()) {
+    return;
+  }
   ElMessageBox({
     title: "确认",
     message: dialogStore.id ? "确认修改？" : "确认创建？",
@@ -280,7 +285,7 @@ const handleConfirmClick = () => {
 
 const { mutate: createAd } = useMutation({
   mutationFn: () =>
-    postCreateAd({
+    postCreateAdvertisement({
       title: AdFormData.value.title,
       content: AdFormData.value.content,
       url: AdFormData.value.url,
@@ -291,7 +296,6 @@ const { mutate: createAd } = useMutation({
     ElMessage.success("创建成功");
     deleteAdFormData();
     handleCloseDialog();
-    queryClient.refetchQueries({ queryKey: ["list", urlQuery.value.page] });
   },
   onError: (err) => {
     ElMessage.error(err.message || "创建失败");
@@ -300,7 +304,7 @@ const { mutate: createAd } = useMutation({
 
 const { mutate: editAd } = useMutation({
   mutationFn: () =>
-    putEditAd({
+    putEditAdvertisement({
       id: dialogStore.id ?? 0,
       title: AdFormData.value.title,
       content: AdFormData.value.content,
@@ -312,7 +316,6 @@ const { mutate: editAd } = useMutation({
     ElMessage.success("编辑成功");
     deleteAdFormData();
     handleCloseDialog();
-    queryClient.refetchQueries({ queryKey: ["list", urlQuery.value.page] });
   },
   onError: (err) => {
     ElMessage.error(err.message || "编辑失败");
